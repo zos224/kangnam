@@ -5,10 +5,52 @@ import Image from "next/image";
 import Link from "next/link";
 import { Blog, BlogType } from "@/utils/model";
 
-const BrandNews = ({blogType, top10, banner} : {blogType: BlogType, top10: Blog[], banner: string}) => {
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
+  return (
+    <div className="flex justify-center gap-2 mt-8">
+      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={`px-4 py-2 rounded ${
+            currentPage === page
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          {page}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+const BrandNews = ({
+  blogType,
+  top10,
+  banner,
+  currentPage,
+  totalPages,
+  onPageChange
+}: {
+  blogType: BlogType;
+  top10: Blog[];
+  banner: string;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) => {
   return (
     <div className="container mx-auto mt-28 mb-24 px-4 max-w-[1170px]">
-      <h1 className="text-3xl font-bold mb-6 text-gray-900 uppercase mt-4">{blogType.name}</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-900 uppercase mt-4">
+        {blogType.name}
+      </h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Danh sách tin tức chính */}
         <div className="lg:col-span-2 space-y-6">
@@ -26,6 +68,11 @@ const BrandNews = ({blogType, top10, banner} : {blogType: BlogType, top10: Blog[
               </div>
             </Link>
           ))}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
         </div>
 
         {/* Cột bên phải */}

@@ -1,21 +1,23 @@
 import { Blog, BlogType } from '@/utils/model';
 import { useState, useEffect } from 'react';
 
-export function useBlogData({slug} : {slug: string}) {
+export function useBlogData({slug, page, limit} : {slug: string, page: number, limit: number}) {
   const [blogs, setBlogs] = useState<BlogType>();
   const [top10, setTop10] = useState<Blog[]>([]);
   const [bannerBlog, setBannerBlog] = useState<string>();
   const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [blogData] = await Promise.all([
-          fetch('/api/blog-type/' + slug)
+          fetch('/api/blog-type/' + slug + "?page=" + page + "&limit=" + limit)
         ]);
 
         const blogs = await blogData.json()
-        setBlogs(blogs || []);
+        setBlogs(blogs.data || []);
+        setTotalPages(blogs.pagination.totalPages)
       } catch (error) {
         console.error('Failed to fetch home data:', error);
       } finally {
@@ -50,7 +52,7 @@ export function useBlogData({slug} : {slug: string}) {
     fetchData();
     fetchTop10();
     fetchBanner();
-  }, []);
+  }, [slug, page, limit]);
 
-  return {blogs, top10, bannerBlog, loading };
+  return {blogs, top10, bannerBlog, loading, totalPages };
 }

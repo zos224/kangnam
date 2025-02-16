@@ -36,7 +36,7 @@ export const POST = async(request: NextRequest) => {
     }
 
     const blogType = await prisma.blogType.create({
-      data: { name: body.name }
+      data: { name: body.name, slug: slug }
     });
 
     return new Response(JSON.stringify(blogType), { status: 201 });

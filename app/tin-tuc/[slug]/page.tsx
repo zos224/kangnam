@@ -1,17 +1,28 @@
 "use client"
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import News from "./News"
 import FooterAction from "@/components/FooterAction";
 import { use } from "react";
 import { useBlogData } from "@/hooks/useBlogData";
-import type { Metadata } from "next";
 
 
 
 export default function NewsPage({params}: {params: Promise<{slug: string}>}) {
+  const [currentPage, setCurrentPage] = useState(1);
   const paramData = use(params);
-  const {blogs, top10, bannerBlog, loading } = useBlogData({ slug: paramData.slug });
+  const { blogs, top10, bannerBlog, loading, totalPages } = useBlogData({ 
+    slug: paramData.slug,
+    page: currentPage,
+    limit: 10
+  });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
@@ -26,7 +37,16 @@ export default function NewsPage({params}: {params: Promise<{slug: string}>}) {
           <span className="sr-only">Loading...</span>
       </div>
       ) : (
-        blogs && bannerBlog && <News blogType={blogs} top10={top10} banner={bannerBlog}/>
+        blogs && bannerBlog && (
+          <News 
+            blogType={blogs} 
+            top10={top10} 
+            banner={bannerBlog}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )
       )}
       
       {/* Footer */}
