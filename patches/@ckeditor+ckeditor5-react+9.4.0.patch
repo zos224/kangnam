@@ -1,0 +1,12 @@
+diff --git a/node_modules/@ckeditor/ckeditor5-react/dist/ckeditor.d.ts b/node_modules/@ckeditor/ckeditor5-react/dist/ckeditor.d.ts
+index 6ed0264..315adab 100644
+--- a/node_modules/@ckeditor/ckeditor5-react/dist/ckeditor.d.ts
++++ b/node_modules/@ckeditor/ckeditor5-react/dist/ckeditor.d.ts
+@@ -113,6 +113,7 @@ export interface Props<TEditor extends Editor> extends InferProps<typeof CKEdito
+         EditorWatchdog: typeof EditorWatchdog;
+         ContextWatchdog: typeof ContextWatchdog;
+     };
++    data?: string;
+     contextItemMetadata?: CKEditorConfigContextMetadata;
+     config?: EditorConfig;
+     watchdogConfig?: WatchdogConfig;
