@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { hostname: 'benhvienthammykangnam.vn' },
       { hostname: 'img.youtube.com' },
-      { hostname: 'localhost' }
+      { hostname: 'kangnam-zos224s-projects.vercel.app' }
     ],
     dangerouslyAllowSVG: true,
   },
