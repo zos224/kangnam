@@ -1,0 +1,257 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id Int @id @default(autoincrement())
+  username String @unique
+  password String
+  name String
+  blogs Blog[]
+}
+
+model Language {
+  id Int @id @default(autoincrement())
+  name String @unique
+  code String @unique
+  using Boolean @default(false)
+  homeContents HomeContent[]
+  settings Setting[]
+  services Service[]
+  shows Show[]
+  departments Department[]
+  introduce Introduce?
+  facilities Facilities?
+}
+
+model Setting {
+  id Int @id @default(autoincrement())
+  name String? @unique
+  idLanguage Int
+  language Language @relation(fields: [idLanguage], references: [id])
+  hotline String?
+  urlFacebook String?
+  urlYoutube String?
+  urlInstagram String?
+  urlTiktok String?
+  logo String?
+  favicon String?
+  bannerStory String?
+  bannerBlog String?
+  workTime String?
+  
+  // New fields with blog relations
+  idChinhSachBaoMat Int? @unique
+  chinhSachBaoMat Blog? @relation("ChinhSachBaoMat", fields: [idChinhSachBaoMat], references: [id])
+  
+  idDieuKhoanSuDung Int? @unique
+  dieuKhoanSuDung Blog? @relation("DieuKhoanSuDung", fields: [idDieuKhoanSuDung], references: [id])
+  
+  idChinhSachRiengTu Int? @unique
+  chinhSachRiengTu Blog? @relation("ChinhSachRiengTu", fields: [idChinhSachRiengTu], references: [id])
+  
+  idQuyTrinhKiemSoat Int? @unique
+  quyTrinhKiemSoat Blog? @relation("QuyTrinhKiemSoat", fields: [idQuyTrinhKiemSoat], references: [id])
+  
+  idTieuChuanChatLuong Int? @unique
+  tieuChuanChatLuong Blog? @relation("TieuChuanChatLuong", fields: [idTieuChuanChatLuong], references: [id])
+
+  titleFooter String?
+  detailFooter String?
+}
+
+model HomeContent {
+  id Int @id @default(autoincrement())
+  idLanguage Int
+  language Language @relation(fields: [idLanguage], references: [id])
+  banners Json @default(dbgenerated("'{}'"))
+  hinhAnhKhachHang Json @default(dbgenerated("'{}'"))
+  doiNguBacSi Json @default(dbgenerated("'{}'"))
+}   
+
+model Show {
+  id Int @id @default(autoincrement())
+  idLanguage Int
+  language Language @relation(fields: [idLanguage], references: [id])
+  title String
+  description String
+  urlVideos String[]
+} 
+
+model Service {
+  id Int @id @default(autoincrement())
+  idLanguage Int
+  language Language @relation(fields: [idLanguage], references: [id])
+  name String  
+  slug String 
+  description String
+  descriptionPrice String @default("")
+  content Json @default(dbgenerated("'{}'"))
+  serviceItems ServiceItem[]
+  priceSheets PriceSheet[]
+  idDepartment Int 
+  department Department @relation(fields: [idDepartment], references: [id])
+}
+
+model ServiceItem {
+  id Int @id @default(autoincrement())
+  idService Int
+  service Service @relation(fields: [idService], references: [id])
+  name String
+  idBlog Int @unique
+  blog Blog @relation(fields: [idBlog], references: [id])
+  img String
+  imgCustomer String[]
+  bannerLeft String @default("")
+  bannerRight String @default("")
+}
+
+model PriceSheet {
+  id Int @id @default(autoincrement())
+  idService Int
+  service Service @relation(fields: [idService], references: [id])
+  name String
+  price Float
+  image String?
+}
+
+model Department {
+  id Int @id @default(autoincrement())
+  name String @unique
+  workLite WorkLike[]
+  services Service[]
+  img String
+  idBlog Int @unique
+  blog Blog @relation(fields: [idBlog], references: [id])
+  idLanguage Int @default(3)
+  language Language @relation(fields: [idLanguage], references: [id])
+}
+
+model WorkLike {
+  id Int @id @default(autoincrement())
+  idDepartment Int
+  department Department @relation(fields: [idDepartment], references: [id])
+  idDoctor Int
+  doctor Doctor @relation(fields: [idDoctor], references: [id])
+}
+
+model Doctor {
+  id Int @id @default(autoincrement())
+  title String
+  name String
+  img String
+  description String
+  exp Int
+  position String
+  workLite WorkLike[]
+  blogs Blog[]
+}
+
+model Story {
+  id Int @id @default(autoincrement())
+  title String
+  slug String @unique @default("phong")
+  serviceUsed String
+  img String
+  content String
+}
+
+model BlogType {
+  id Int @id @default(autoincrement())
+  name String @unique 
+  slug String @unique @default("naruto")
+  blogs Blog[]
+}
+
+model Blog {
+  id Int @id @default(autoincrement())
+  title String
+  slug String @unique
+  img String
+  content String
+  idBlogType Int
+  blogType BlogType @relation(fields: [idBlogType], references: [id])
+  date DateTime @default(now())
+  view Int @default(0)
+  idAuthor Int
+  author Admin @relation(fields: [idAuthor], references: [id])
+  idDoctor Int?
+  doctor Doctor? @relation(fields: [idDoctor], references: [id])
+  comments Comment[]
+  serviceItem ServiceItem?
+  department Department?
+  
+  // Add relation fields
+  settingChinhSachBaoMat Setting? @relation("ChinhSachBaoMat")
+  settingDieuKhoanSuDung Setting? @relation("DieuKhoanSuDung")
+  settingChinhSachRiengTu Setting? @relation("ChinhSachRiengTu")
+  settingQuyTrinhKiemSoat Setting? @relation("QuyTrinhKiemSoat")
+  settingTieuChuanChatLuong Setting? @relation("TieuChuanChatLuong")
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+  idBlog Int
+  blog Blog @relation(fields: [idBlog], references: [id])
+  content String
+  name String
+  email String
+  phone String
+  date DateTime @default(now())
+}
+
+model Branch {
+  id Int @id @default(autoincrement())
+  name String
+  address String
+  ggmap String
+}
+
+model Introduce {
+  id Int @id @default(autoincrement())
+  idLanguage Int @unique @default(3)
+  language Language @relation(fields: [idLanguage], references: [id])
+  title String?
+  banner String?
+  description1 String?
+  features Json @default(dbgenerated("'{}'"))
+  description2 String?
+  beautySection Json @default(dbgenerated("'{}'"))
+  newsSection Json @default(dbgenerated("'{}'"))
+  customers Json @default(dbgenerated("'{}'"))
+}
+
+model Facilities {
+  id Int @id @default(autoincrement())
+  idLanguage Int @unique @default(3)
+  language Language @relation(fields: [idLanguage], references: [id])
+  title String?
+  banner String?
+  description1 String?
+  features Json @default(dbgenerated("'{}'"))
+  description2 String?
+  bigFeatures Json @default(dbgenerated("'{}'"))
+}
+
+model UserRequest {
+  id Int @id @default(autoincrement())
+  name String
+  phone String
+  service String
+  type String
+  status String @default("pending") // "pending", "processed"
+  createdAt DateTime @default(now())
+}
+
+
