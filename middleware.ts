@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
   const method = request.method
-  const token = request.cookies.get('authjs.session-token')?.value
+  const token = request.cookies.get('authjs.session-token')?.value || request.cookies.get('__Secure-authjs.session-token')?.value 
 
   if (path.includes("/admin/login") && token) {
     return NextResponse.redirect(new URL('/admin/language', request.url))
