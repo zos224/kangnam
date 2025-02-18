@@ -17,14 +17,7 @@ const CKEditorCustom = dynamic(() => import('@/components/admin/CKEditor'), { ss
 export default function BlogForm({ params }: { params: Promise<{action: string[]}> }) {
   const session = useSession();
   const paramData = use(params);
-  const [blog, setBlog] = useState<Partial<Blog>>({
-    title: '',
-    content: '',
-    img: '',
-    idBlogType: 0,
-    idDoctor: undefined,
-    idAuthor: 0
-  });
+  const [blog, setBlog] = useState<Partial<Blog>>({});
 
   useEffect(() => {
     if (session && session.data && session.data.user?.id
@@ -50,10 +43,10 @@ export default function BlogForm({ params }: { params: Promise<{action: string[]
       .catch(err => console.error('Failed to fetch blog types:', err));
 
     // Fetch doctors
-    // fetch('/api/doctor')
-    //   .then(res => res.json())
-    //   .then(data => setDoctors(data))
-    //   .catch(err => console.error('Failed to fetch doctors:', err));
+    fetch('/api/doctor?limit=1000')
+      .then(res => res.json())
+      .then(data => setDoctors(data.data))
+      .catch(err => console.error('Failed to fetch doctors:', err));
 
     // Fetch blog data if editing
     if (isEdit && paramData.action[1]) {
@@ -127,7 +120,7 @@ export default function BlogForm({ params }: { params: Promise<{action: string[]
             <div>
               <label className="block text-sm font-medium mb-1">Tiêu đề</label>
               <Input
-                value={blog.title}
+                value={blog.title || ''}
                 onChange={(e) => setBlog({ ...blog, title: e.target.value })}
                 placeholder="Nhập tiêu đề bài viết"
               />
@@ -138,7 +131,7 @@ export default function BlogForm({ params }: { params: Promise<{action: string[]
               <div className="flex items-center space-x-4">
                 {blog.img && (
                   <Image
-                    src={blog.img}
+                    src={blog.img || ""}
                     alt="Thumbnail"
                     width={200}
                     height={150}
@@ -163,7 +156,7 @@ export default function BlogForm({ params }: { params: Promise<{action: string[]
               <label className="block text-sm font-medium mb-1">Loại bài viết</label>
               <select
                 className="w-full border rounded-md p-2"
-                value={blog.idBlogType}
+                value={blog.idBlogType || ''}
                 onChange={(e) => setBlog({ ...blog, idBlogType: parseInt(e.target.value) })}
               >
                 <option value="">Chọn loại bài viết</option>
