@@ -48,6 +48,8 @@ export function useHomeData() {
           setBranchs(branchData.data || []);
           setBlogs(blogData);
         } catch (error) {
+          localStorage.removeItem("currentLang");
+          location.reload()
           console.error('Failed to fetch home data:', error);
         } finally {
           setLoading(false);
